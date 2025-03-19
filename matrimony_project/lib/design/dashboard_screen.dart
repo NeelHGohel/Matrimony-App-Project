@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-
 import '../utils/export.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -11,8 +10,6 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   ApiService apiService = ApiService();
-  int countOfUser = 0;
-  int countOfFavoriteUser = 0;
 
   @override
   void initState() {
@@ -23,9 +20,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<void> fetchUserCounts() async {
     try {
       List<dynamic> users = await apiService.getUser(context);
-      List<dynamic> favoriteUsers = users
-          .where((user) => user['isFavorite'] == true)
-          .toList();
+      List<dynamic> favoriteUsers =
+      users.where((user) => user['isFavorite'] == true).toList();
 
       setState(() {
         countOfUser = users.length;
@@ -50,20 +46,46 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        backgroundColor: Colors.red.shade700,
+        backgroundColor: Colors.transparent,
         elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.red.shade400,
+                Colors.red.shade700,
+              ],
+            ),
+          ),
+        ),
         title: Row(
           children: [
             Hero(
               tag: 'app_logo',
-              child: ClipOval(
-                child: Image.asset(
-                  'assets/images/leading_logo.jpeg',
-                  width: 36,
-                  height: 36,
-                  fit: BoxFit.cover,
+              child: Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      spreadRadius: 1,
+                    )
+                  ],
+                ),
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/images/leading_logo.jpeg',
+                    width: 32,
+                    height: 32,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
@@ -73,7 +95,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 20,
+                fontSize: 22,
+                letterSpacing: 0.5,
               ),
             ),
           ],
@@ -93,10 +116,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           SharedPrefs.logout();
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => LoginScreen()),
+                            MaterialPageRoute(
+                                builder: (context) => LoginScreen()),
                           );
                         },
-                        child: const Text('Yes', style: TextStyle(color: Colors.red)),
+                        child: const Text('Yes',
+                            style: TextStyle(color: Colors.pink)),
                       ),
                       CupertinoDialogAction(
                         onPressed: () {
@@ -114,73 +139,102 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ],
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Dashboard Header
-              const Text(
-                "Dashboard",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+              // Header with welcome message
+              Container(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.red.shade700,
+                      Colors.red.shade400,
+                    ],
+                  ),
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(32),
+                    bottomRight: Radius.circular(32),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "Welcome to your matrimony dashboard",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                ),
-              ),
-              const SizedBox(height: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 16),
+                    const Text(
+                      "Welcome",
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      "Connecting hearts, one match at a time",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white70,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
 
-              // Stats Cards
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildStatCard(
-                      title: "Total Users",
-                      value: countOfUser.toString(),
-                      icon: Icons.people,
-                      color: Colors.blue,
+                    // Stats Cards
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildStatCard(
+                            title: "Total Users",
+                            value: countOfUser.toString(),
+                            icon: Icons.people_alt_rounded,
+                            color: Colors.blue,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildStatCard(
+                            title: "Favorites",
+                            value: countOfFavoriteUser.toString(),
+                            icon: Icons.favorite_rounded,
+                            color: Colors.redAccent,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildStatCard(
-                      title: "Favorites",
-                      value: countOfFavoriteUser.toString(),
-                      icon: Icons.favorite,
-                      color: Colors.red,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
 
               const SizedBox(height: 32),
 
               // Menu Options Header
-              const Text(
-                "Quick Actions",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: const Text(
+                  "Quick Actions",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
 
               // Menu Options
-              Expanded(
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: GridView.count(
                   crossAxisCount: 2,
                   childAspectRatio: 1.2,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
+                  shrinkWrap: true, // Crucial for SingleChildScrollView
+                  physics: NeverScrollableScrollPhysics(), // Disable GridView's scrolling
                   children: [
                     _buildMenuCard(
                       title: "Add User",
@@ -220,8 +274,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       icon: Icons.info_rounded,
                       color: Colors.blue,
                       onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => AboutUs()));
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => AboutUs()));
                       },
                     ),
                   ],

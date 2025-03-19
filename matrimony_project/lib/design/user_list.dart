@@ -80,9 +80,26 @@ class _AllUserListState extends State<AllUserList> {
       });
     } else if (selectedFilter == 'Recently Added') {
       filteredUsers.sort((a, b) {
-        final idA = (a['id']);
-        final idB = (b['id']);
-        return idB.compareTo(idA);
+        // Ensure 'id' exists
+        final idA = a['id'];
+        final idB = b['id'];
+
+        // Handle cases where 'id' might be null
+        if (idA == null && idB == null) return 0; // Both null, consider equal
+        if (idA == null) return 1; // a is null, b is not, so b is "greater"
+        if (idB == null) return -1; // b is null, a is not, so a is "greater"
+
+        // Attempt to parse as int, if parsing fails, compare as strings
+        int? intIdA = int.tryParse(idA.toString());
+        int? intIdB = int.tryParse(idB.toString());
+
+        if (intIdA != null && intIdB != null) {
+          // Both are integers, compare as integers
+          return intIdB.compareTo(intIdA); // Sort in descending order of ID
+        } else {
+          // One or both are not integers, compare as strings to avoid errors
+          return idB.toString().compareTo(idA.toString());
+        }
       });
     }
   }
@@ -325,21 +342,21 @@ class _AllUserListState extends State<AllUserList> {
                                 CircleAvatar(
                                   radius: 30,
                                   backgroundImage:
-                                  NetworkImage(user['photo'] ?? ''),
+                                      NetworkImage(user['photo'] ?? ''),
                                   onBackgroundImageError: (_, __) {},
                                   child: user['photo'] == null
                                       ? const Icon(
-                                    Icons.person,
-                                    size: 40,
-                                    color: Colors.grey,
-                                  )
+                                          Icons.person,
+                                          size: 40,
+                                          color: Colors.grey,
+                                        )
                                       : null,
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         user['name'] ?? 'No Name',
@@ -401,16 +418,85 @@ class _AllUserListState extends State<AllUserList> {
                                   },
                                 ),
                                 IconButton(
-                                  icon: Icon(
-                                    isFavorite
-                                        ? Icons.favorite
-                                        : Icons.favorite_border,
-                                    size: 28,
-                                    color: isFavorite ?Colors.red : Colors.grey,
-
-                                  ),
-                                  onPressed: () => _toggleFavorite(user),
-                                ),
+                                    icon: Icon(
+                                      isFavorite
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
+                                      size: 28,
+                                      color:
+                                          isFavorite ? Colors.red : Colors.grey,
+                                    ),
+                                    onPressed: () {
+                                      isFavorite
+                                          ? showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return CupertinoAlertDialog(
+                                                  title: const Text(
+                                                      "Remove from Favorite"),
+                                                  content: const Text(
+                                                      'Are you sure you want to remove this user from Favorite?'),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () async {
+                                                        _toggleFavorite(user);
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child: Text('Yes',
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .black)),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child: Text('No',
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .black)),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            )
+                                          : showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return CupertinoAlertDialog(
+                                                  title: const Text(
+                                                      "Add to Favorite"),
+                                                  content: const Text(
+                                                      'Are you sure you want to add this user to Favorite?'),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () async {
+                                                        _toggleFavorite(user);
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child: Text('Yes',
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .black)),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child: Text('No',
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .black)),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                    }),
                                 IconButton(
                                   icon: Icon(
                                     Icons.delete,
@@ -431,13 +517,17 @@ class _AllUserListState extends State<AllUserList> {
                                                 Navigator.of(context).pop();
                                                 await _deleteUser(user);
                                               },
-                                              child: Text('Yes', style: TextStyle(color: primaryColor)),
+                                              child: Text('Yes',
+                                                  style: TextStyle(
+                                                      color: Colors.black)),
                                             ),
                                             TextButton(
                                               onPressed: () {
                                                 Navigator.of(context).pop();
                                               },
-                                              child: Text('No', style: TextStyle(color: Colors.grey)),
+                                              child: Text('No',
+                                                  style: TextStyle(
+                                                      color: Colors.black)),
                                             ),
                                           ],
                                         );

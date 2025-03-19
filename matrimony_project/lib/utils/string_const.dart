@@ -8,7 +8,7 @@ const String DOB = 'dob';
 const String HOBBIES = 'hobbies';
 const String AGE = 'age';
 const String ID = 'id';
-int age = 0;
+int? age;
 
 int? countOfUser;
 int? countOfFavoriteUser;

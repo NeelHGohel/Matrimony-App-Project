@@ -1,5 +1,4 @@
 import 'package:intl/intl.dart';
-import 'package:matrimony_project/api/api_service.dart';
 import '../utils/export.dart';
 
 class RegistrationForm extends StatefulWidget {
@@ -19,9 +18,6 @@ class _RegistrationFormState extends State<RegistrationForm> {
   String? selectedCity;
   String dob = "Select Date of Birth";
   DateTime? date = DateTime.now();
-  int? age;
-  List<String> selectedHobbies = [];
-
   // Controllers
   TextEditingController nameController = TextEditingController();
   TextEditingController addressController = TextEditingController();
@@ -195,13 +191,13 @@ class _RegistrationFormState extends State<RegistrationForm> {
 
             // Form content
             Padding(
-              padding: EdgeInsets.only(top: 15),
+              padding: const EdgeInsets.only(top: 15),
               child: Form(
                 key: _formKey,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: SingleChildScrollView(
-                    physics: BouncingScrollPhysics(),
+                    physics: const BouncingScrollPhysics(),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -321,13 +317,13 @@ class _RegistrationFormState extends State<RegistrationForm> {
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                SizedBox(height: 8),
+                                const SizedBox(height: 8),
                                 InkWell(
                                   onTap: () async {
                                     try {
                                       final DateTime? pickedDate = await showDatePicker(
                                         context: context,
-                                        initialDate: DateTime(2000),
+                                        // initialDate: DateTime(),
                                         firstDate: DateTime(1947),
                                         lastDate: DateTime(2008),
                                         builder: (context, child) {
@@ -374,9 +370,9 @@ class _RegistrationFormState extends State<RegistrationForm> {
                                           ),
                                         ),
                                         if (age != null) ...[
-                                          Spacer(),
+                                          const Spacer(),
                                           Container(
-                                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                             decoration: BoxDecoration(
                                               color: primaryColor.withOpacity(0.1),
                                               borderRadius: BorderRadius.circular(12),
@@ -399,7 +395,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                           ),
                         ),
 
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
 
                         // Address section
                         Card(
